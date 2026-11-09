@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "employees": 76,
+  "tickets": 200,
+  "teams": 12,
+  "services": 23,
+  "incidents": 4,
+  "corpus_docs": 52,
+  "eval_questions": 50,
+  "outputs": {
+    "corpus": "/home/hrushik/proj/data/corpus",
+    "sql": "/home/hrushik/proj/data/sql",
+    "graph": "/home/hrushik/proj/data/graph/seed.cypher",
+    "eval": "/home/hrushik/proj/data/eval.jsonl"
+  }
+}

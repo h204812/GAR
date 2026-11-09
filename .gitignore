@@ -61,6 +61,3 @@ temp/
 *.pem
 secrets/
 credentials.json
-
-# Docs 
-docs/

@@ -1,0 +1,325 @@
+# Acme Knowledge Copilot — single source of truth for synthetic data.
+# Phase 0A: scripted generation only (no LLM). SEED is fixed for reproducibility.
+seed: 42
+company:
+  name: Acme
+  domain: acme.internal
+  story_month: "2024-09"
+
+teams:
+  - id: payments
+    name: Payments
+    slack_channel: "#payments-eng"
+    oncall_rotation: payments-primary
+  - id: platform
+    name: Platform
+    slack_channel: "#platform"
+    oncall_rotation: platform-primary
+  - id: identity
+    name: Identity
+    slack_channel: "#identity"
+    oncall_rotation: identity-primary
+  - id: sre
+    name: SRE
+    slack_channel: "#sre-oncall"
+    oncall_rotation: sre-primary
+  - id: checkout
+    name: Checkout
+    slack_channel: "#checkout"
+    oncall_rotation: checkout-primary
+  - id: inventory
+    name: Inventory
+    slack_channel: "#inventory"
+    oncall_rotation: inventory-primary
+  - id: notifications
+    name: Notifications
+    slack_channel: "#notif"
+    oncall_rotation: notif-primary
+  - id: data
+    name: Data Platform
+    slack_channel: "#data-platform"
+    oncall_rotation: data-primary
+  - id: security
+    name: Security
+    slack_channel: "#security"
+    oncall_rotation: security-primary
+  - id: hr
+    name: People Ops
+    slack_channel: "#people-ops"
+    oncall_rotation: null
+  - id: finance
+    name: Finance Ops
+    slack_channel: "#finance-ops"
+    oncall_rotation: null
+  - id: support
+    name: Customer Support
+    slack_channel: "#support-eng"
+    oncall_rotation: support-primary
+
+services:
+  - name: checkout-api
+    tier: 0
+    repo: github.com/acme/checkout-api
+    owner_team: checkout
+    depends_on: [payments-ledger, auth-service, inventory-api, notification-svc]
+  - name: payments-ledger
+    tier: 0
+    repo: github.com/acme/payments-ledger
+    owner_team: payments
+    depends_on: [auth-service, payments-db]
+  - name: auth-service
+    tier: 0
+    repo: github.com/acme/auth-service
+    owner_team: identity
+    depends_on: [identity-db, redis-sessions]
+  - name: inventory-api
+    tier: 1
+    repo: github.com/acme/inventory-api
+    owner_team: inventory
+    depends_on: [inventory-db]
+  - name: notification-svc
+    tier: 1
+    repo: github.com/acme/notification-svc
+    owner_team: notifications
+    depends_on: [redis-notif]
+  - name: order-orchestrator
+    tier: 1
+    repo: github.com/acme/order-orchestrator
+    owner_team: checkout
+    depends_on: [checkout-api, inventory-api]
+  - name: fraud-engine
+    tier: 1
+    repo: github.com/acme/fraud-engine
+    owner_team: payments
+    depends_on: [payments-ledger]
+  - name: billing-api
+    tier: 1
+    repo: github.com/acme/billing-api
+    owner_team: finance
+    depends_on: [payments-ledger]
+  - name: catalog-api
+    tier: 2
+    repo: github.com/acme/catalog-api
+    owner_team: inventory
+    depends_on: [inventory-db]
+  - name: search-api
+    tier: 2
+    repo: github.com/acme/search-api
+    owner_team: platform
+    depends_on: [elasticsearch]
+  - name: edge-gateway
+    tier: 0
+    repo: github.com/acme/edge-gateway
+    owner_team: platform
+    depends_on: [checkout-api, auth-service, catalog-api]
+  - name: feature-flags
+    tier: 2
+    repo: github.com/acme/feature-flags
+    owner_team: platform
+    depends_on: [redis-flags]
+  - name: audit-log
+    tier: 1
+    repo: github.com/acme/audit-log
+    owner_team: security
+    depends_on: [audit-db]
+  - name: metrics-collector
+    tier: 2
+    repo: github.com/acme/metrics-collector
+    owner_team: sre
+    depends_on: []
+  - name: pager-bridge
+    tier: 1
+    repo: github.com/acme/pager-bridge
+    owner_team: sre
+    depends_on: [notification-svc]
+  - name: payments-db
+    tier: 0
+    repo: null
+    owner_team: payments
+    depends_on: []
+    kind: datastore
+  - name: identity-db
+    tier: 0
+    repo: null
+    owner_team: identity
+    depends_on: []
+    kind: datastore
+  - name: inventory-db
+    tier: 1
+    repo: null
+    owner_team: inventory
+    depends_on: []
+    kind: datastore
+  - name: audit-db
+    tier: 1
+    repo: null
+    owner_team: security
+    depends_on: []
+    kind: datastore
+  - name: redis-sessions
+    tier: 0
+    repo: null
+    owner_team: identity
+    depends_on: []
+    kind: datastore
+  - name: redis-notif
+    tier: 1
+    repo: null
+    owner_team: notifications
+    depends_on: []
+    kind: datastore
+  - name: redis-flags
+    tier: 2
+    repo: null
+    owner_team: platform
+    depends_on: []
+    kind: datastore
+  - name: elasticsearch
+    tier: 2
+    repo: null
+    owner_team: platform
+    depends_on: []
+    kind: datastore
+
+# First names / last names for deterministic employee generation
+employee_first_names:
+  - Ava
+  - Noah
+  - Mia
+  - Liam
+  - Zoe
+  - Ethan
+  - Nora
+  - Omar
+  - Priya
+  - Kai
+  - Sofia
+  - Arjun
+  - Elena
+  - Mateo
+  - Hannah
+  - Jordan
+  - Riley
+  - Sam
+  - Taylor
+  - Quinn
+
+employee_last_names:
+  - Chen
+  - Patel
+  - Garcia
+  - Kim
+  - Nguyen
+  - Brooks
+  - Singh
+  - Alvarez
+  - Okonkwo
+  - Rossi
+  - Tanaka
+  - Muller
+  - Costa
+  - Andersson
+  - Ibrahim
+  - Walsh
+  - Park
+  - Silva
+  - Khan
+  - Lopez
+
+roles_by_team:
+  payments: [Backend Engineer, Staff Engineer, Engineering Manager, SRE Embed]
+  platform: [Platform Engineer, Staff Engineer, Engineering Manager]
+  identity: [Backend Engineer, Security Engineer, Engineering Manager]
+  sre: [SRE, Staff SRE, Engineering Manager]
+  checkout: [Backend Engineer, Frontend Engineer, Engineering Manager]
+  inventory: [Backend Engineer, Data Engineer, Engineering Manager]
+  notifications: [Backend Engineer, Engineering Manager]
+  data: [Data Engineer, Analytics Engineer, Engineering Manager]
+  security: [Security Engineer, AppSec, Engineering Manager]
+  hr: [People Partner, HRBP]
+  finance: [Finance Analyst, Controller]
+  support: [Support Engineer, Support Lead]
+
+slas:
+  - severity: Sev-1
+    response_minutes: 15
+    resolve_hours: 4
+  - severity: Sev-2
+    response_minutes: 30
+    resolve_hours: 24
+  - severity: Sev-3
+    response_minutes: 240
+    resolve_hours: 72
+  - severity: Sev-4
+    response_minutes: 1440
+    resolve_hours: 336
+
+incidents:
+  - id: INC-2024-0912
+    title: Checkout checkout latency and payment failures
+    severity: Sev-1
+    started_at: "2024-09-12T14:05:00Z"
+    mitigated_at: "2024-09-12T16:40:00Z"
+    primary_service: checkout-api
+    related_services: [payments-ledger, auth-service]
+    owner_team: checkout
+    summary: Downstream payments-ledger connection pool exhaustion caused checkout timeouts.
+  - id: INC-2024-0918
+    title: Auth session stampede after redis failover
+    severity: Sev-2
+    started_at: "2024-09-18T09:20:00Z"
+    mitigated_at: "2024-09-18T11:05:00Z"
+    primary_service: auth-service
+    related_services: [redis-sessions]
+    owner_team: identity
+    summary: Redis failover without warm replicas caused session lookup spikes.
+  - id: INC-2024-1103
+    title: Payments ledger write amplification
+    severity: Sev-1
+    started_at: "2024-11-03T21:10:00Z"
+    mitigated_at: "2024-11-04T01:25:00Z"
+    primary_service: payments-ledger
+    related_services: [payments-db, fraud-engine]
+    owner_team: payments
+    summary: Incorrect retry loop on ledger writes overloaded payments-db.
+  - id: INC-2024-1201
+    title: Inventory stock mismatch during flash sale
+    severity: Sev-2
+    started_at: "2024-12-01T18:00:00Z"
+    mitigated_at: "2024-12-01T20:30:00Z"
+    primary_service: inventory-api
+    related_services: [catalog-api]
+    owner_team: inventory
+    summary: Cache TTL misconfiguration returned stale stock counts.
+
+# Policy facts used by scripted corpus + eval gold answers
+policies:
+  pto:
+    engineers_days_per_year: 25
+    accrual_per_month: 2.08
+    carryover_max_days: 5
+    blackout_months: [November, December]
+  expenses:
+    meal_cap_usd: 75
+    hotel_cap_usd: 250
+    requires_receipt_above_usd: 25
+    note: Foreign exchange rates are not stored in Acme docs; use live rates for USD to INR.
+  remote_work:
+    max_remote_days_per_week: 3
+    core_hours: "10:00-15:00 local"
+  security_awareness:
+    phishing_training_days: 30
+    laptop_encryption_required: true
+
+ticket_counts:
+  total: 200
+  # Explicit Sev-1 for Payments in Q3 2024 (Jul–Sep) — gold answer for eval
+  payments_sev1_q3_2024: 4
+
+corpus_targets:
+  policies: 8
+  wiki: 12
+  runbooks: 12
+  postmortems: 4
+  architecture: 10
+  security: 6

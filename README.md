@@ -14,7 +14,9 @@ Data is **synthetic** (generated in-repo from a shared manifest), so SQL, graph,
 
 | Document | Purpose |
 |----------|---------|
-| [docs/project_plan.md](docs/project_plan.md) | Full reference: phases, techniques, data plan, repo layout, definition of done |
+| [docs/project_plan.md](docs/project_plan.md) | Full reference: phases, techniques, data plan |
+| [docs/phase0a.md](docs/phase0a.md) | Phase 0A deliverables and how to regenerate data |
+| [docs/corpus_format.md](docs/corpus_format.md) | Markdown + YAML frontmatter corpus standard |
 
 ## Tech stack
 
@@ -24,59 +26,84 @@ LangGraph · LangChain · Qdrant · Postgres · Neo4j · FastAPI · Streamlit ·
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 0 | Scaffold, Docker, synthetic data, eval set | Not started |
+| **0A** | Manifest, scripted corpus, SQL/graph seeds, 50 eval questions | **Done** |
+| **0B** | Docker stores + load SQL/Cypher | **Done** |
 | 1 | Indexing (chunking, parent-doc, RAPTOR) | Pending |
 | 2 | Naive RAG baseline | Pending |
 | 3–8 | Translation, routing, construction, CRAG, Self-RAG, full graph | Pending |
 
-Details and checkpoints are in [docs/project_plan.md](docs/project_plan.md).
-
-## Repository layout (planned)
-
-```text
-docs/                 Project plan and references
-data/                 Manifest, corpus, SQL/graph seeds, eval.jsonl
-scripts/              Seed and indexing scripts
-src/acme_copilot/     Pipeline modules by stage
-app/                  FastAPI + Streamlit lab
-tests/                Per-technique tests
-docker-compose.yml    Qdrant, Postgres, Neo4j
-```
-
-## Prerequisites (for Phase 0+)
-
-- Python 3.11+ and [uv](https://docs.astral.sh/uv/) (recommended) or pip  
-- Docker and Docker Compose  
-- OpenAI API key **or** local Ollama for LLM/embeddings  
-
-## Quick start
-
-Phase 0 is not implemented yet. When it lands, the flow will be:
+## Phase 0A quick start (data only)
 
 ```bash
-# Clone and enter the repo
-cd acme-copilot
+cd /home/hrushik/proj
 
-# Start data stores
-docker compose up -d
+# Prefer a local venv if `uv` snap has permission issues
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 
-# Install dependencies (after pyproject.toml exists)
-uv sync
+# Regenerate corpus, SQL, Cypher, eval from data/manifest.yaml
+python scripts/seed_universe.py
 
-# Seed synthetic Acme data and build indexes
-uv run python scripts/seed_universe.py
-uv run python scripts/index_corpus.py
-
-# Run the lab UI
-uv run streamlit run app/lab.py
+pytest tests/test_phase0a_seed.py -q
 ```
+
+Or with uv (when it works on your machine):
+
+```bash
+uv sync
+uv run python scripts/seed_universe.py
+```
+
+### Generated artifacts
+
+| Path | What |
+|------|------|
+| `data/corpus/` | 52 markdown docs with YAML frontmatter |
+| `data/sql/` | `schema.sql`, `seed.sql`, `snapshot.json` |
+| `data/graph/seed.cypher` | Neo4j graph seed |
+| `data/eval.jsonl` | 50 golden questions |
+| `data/seed_summary.json` | Counts from last run |
+
+## Repository layout
+
+```text
+docs/                 Project plan and phase notes
+data/                 Manifest + generated corpus/sql/graph/eval
+scripts/              seed_universe.py
+src/acme_copilot/     Package (seed modules now; RAG stages later)
+tests/                Phase tests
+pyproject.toml
+```
+
+## Phase 0B — start data stores
+
+```bash
+# One-time (if compose / docker group missing)
+sudo apt install docker-compose-v2
+sudo usermod -aG docker "$USER" && newgrp docker
+
+cp -n .env.example .env
+bash scripts/up_stores.sh
+bash scripts/load_stores.sh   # schema + seed.sql + seed.cypher + smoke checks
+```
+
+See [docs/phase0b.md](docs/phase0b.md).
+
+## Prerequisites
+
+| Phase | Need |
+|-------|------|
+| **0A** | Python 3.11+ |
+| **0B** | Docker + Docker Compose + docker group membership |
+| **1+** | Embeddings/LLM (OpenAI or Ollama) |
 
 ## How to learn with this repo
 
 1. Implement **one phase** at a time.  
 2. Run the same **50** golden questions after each phase.  
 3. Compare RAGAS metrics to the previous phase.  
-4. Use Streamlit toggles to see which technique helps on which question type.
+4. Use Streamlit toggles (later) to see which technique helps on which question type.
 
 ## License
 
