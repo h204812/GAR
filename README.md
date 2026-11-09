@@ -17,6 +17,7 @@ Data is **synthetic** (generated in-repo from a shared manifest), so SQL, graph,
 | [docs/project_plan.md](docs/project_plan.md) | Full reference: phases, techniques, data plan |
 | [docs/phase0a.md](docs/phase0a.md) | Phase 0A deliverables and how to regenerate data |
 | [docs/corpus_format.md](docs/corpus_format.md) | Markdown + YAML frontmatter corpus standard |
+| [docs/phase1.md](docs/phase1.md) | Dense indexing into Qdrant |
 
 ## Tech stack
 
@@ -28,7 +29,7 @@ LangGraph · LangChain · Qdrant · Postgres · Neo4j · FastAPI · Streamlit ·
 |-------|-------------|--------|
 | **0A** | Manifest, scripted corpus, SQL/graph seeds, 50 eval questions | **Done** |
 | **0B** | Docker stores + load SQL/Cypher | **Done** |
-| 1 | Indexing (chunking, parent-doc, RAPTOR) | Pending |
+| **1** | Indexing — baseline dense chunks → Qdrant | **Done** (parent-doc / RAPTOR later) |
 | 2 | Naive RAG baseline | Pending |
 | 3–8 | Translation, routing, construction, CRAG, Self-RAG, full graph | Pending |
 
@@ -89,6 +90,15 @@ bash scripts/load_stores.sh   # schema + seed.sql + seed.cypher + smoke checks
 ```
 
 See [docs/phase0b.md](docs/phase0b.md).
+
+## Phase 1 — index corpus into Qdrant
+
+```bash
+# OPENAI_API_KEY must be set in .env
+python scripts/index_corpus.py
+```
+
+Creates collection `acme_chunks` (vectors + frontmatter payload). See [docs/phase1.md](docs/phase1.md).
 
 ## Prerequisites
 
