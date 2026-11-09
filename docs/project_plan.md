@@ -2,7 +2,7 @@
 
 Reference document for the hands-on RAG pipeline lab. Implements every stage of the standard LangChain RAG pipeline diagram (indexing → query translation → routing → query construction → retrieval → generation).
 
-**Status:** Phases **0A**, **0B**, and **1 baseline** complete (`acme_chunks` in Qdrant). Parent-doc / RAPTOR still optional within Phase 1.
+**Status:** Phases **0A–2** complete (naive RAG CLI over Qdrant). Parent-doc / RAPTOR optional; Phase 3 = query translation.
 
 ---
 
@@ -194,3 +194,4 @@ acme-copilot/                    # project root
 | 2026-11-09 | Phase 0B: added `docker-compose.yml` (Postgres, Neo4j, Qdrant) |
 | 2026-11-09 | Phase 0B: loaded SQL + Cypher seeds; smoke checks passed |
 | 2026-11-09 | Phase 1 baseline: chunk + OpenAI embed + Qdrant `acme_chunks` |
+| 2026-11-09 | Phase 2: naive RAG CLI (`scripts/ask.py`) |

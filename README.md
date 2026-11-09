@@ -18,6 +18,7 @@ Data is **synthetic** (generated in-repo from a shared manifest), so SQL, graph,
 | [docs/phase0a.md](docs/phase0a.md) | Phase 0A deliverables and how to regenerate data |
 | [docs/corpus_format.md](docs/corpus_format.md) | Markdown + YAML frontmatter corpus standard |
 | [docs/phase1.md](docs/phase1.md) | Dense indexing into Qdrant |
+| [docs/phase2.md](docs/phase2.md) | Naive RAG CLI |
 
 ## Tech stack
 
@@ -30,7 +31,7 @@ LangGraph · LangChain · Qdrant · Postgres · Neo4j · FastAPI · Streamlit ·
 | **0A** | Manifest, scripted corpus, SQL/graph seeds, 50 eval questions | **Done** |
 | **0B** | Docker stores + load SQL/Cypher | **Done** |
 | **1** | Indexing — baseline dense chunks → Qdrant | **Done** (parent-doc / RAPTOR later) |
-| 2 | Naive RAG baseline | Pending |
+| **2** | Naive RAG CLI (Qdrant cosine → LLM) | **Done** |
 | 3–8 | Translation, routing, construction, CRAG, Self-RAG, full graph | Pending |
 
 ## Phase 0A quick start (data only)
@@ -99,6 +100,15 @@ python scripts/index_corpus.py
 ```
 
 Creates collection `acme_chunks` (vectors + frontmatter payload). See [docs/phase1.md](docs/phase1.md).
+
+## Phase 2 — ask (naive RAG CLI)
+
+```bash
+python scripts/ask.py "What is Acme PTO accrual for engineers?"
+python scripts/ask.py -q "meal expense cap" --show-context
+```
+
+Qdrant cosine top-k only — no SQL/graph, no query translation. See [docs/phase2.md](docs/phase2.md).
 
 ## Prerequisites
 
