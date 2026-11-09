@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "openai>=1.40",
+    "qdrant-client>=1.12",
+    "langchain-text-splitters>=0.3",
 ]
 
 [project.optional-dependencies]
